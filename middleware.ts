@@ -16,7 +16,8 @@ export default auth((req) => {
   if ((isAccountRoute || isCheckoutRoute) && !isLoggedIn) {
     return NextResponse.redirect(new URL(`/login?callbackUrl=${nextUrl.pathname}`, nextUrl));
   }
-  if (isAuthRoute && isLoggedIn) return NextResponse.redirect(new URL("/", nextUrl));
+  // Removed: redirect logged-in users away from auth pages (allow viewing login/register anytime)
+  // if (isAuthRoute && isLoggedIn) return NextResponse.redirect(new URL("/", nextUrl));
   return NextResponse.next();
 });
 export const config = { matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"] };

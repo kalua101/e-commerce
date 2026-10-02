@@ -21,7 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="p-6 border-b border-white/10">
           <Link href="/" className="flex items-center gap-2 font-bold text-lg">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-black">S</div>
-            <span className="gradient-text">ShopVerse</span>
+            <span className="gradient-text">Shopping</span>
           </Link>
           <p className="text-xs text-gray-400 mt-1">Admin Panel</p>
         </div>

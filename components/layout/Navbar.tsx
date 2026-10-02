@@ -34,7 +34,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold text-xl shrink-0">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-black">S</div>
-          <span className="gradient-text">ShopVerse</span>
+          <span className="gradient-text">Shopping</span>
         </Link>
 
         {/* Search */}

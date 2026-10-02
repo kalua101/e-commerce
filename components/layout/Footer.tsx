@@ -1,12 +1,16 @@
+"use client";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+
 export default function Footer() {
+  const { data: session } = useSession();
   return (
     <footer className="border-t border-white/10 mt-24 py-16 px-4">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
           <div className="flex items-center gap-2 font-bold text-xl mb-4">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-black">S</div>
-            <span className="gradient-text">ShopVerse</span>
+            <span className="gradient-text">Shopping</span>
           </div>
           <p className="text-gray-400 text-sm leading-relaxed">Your premium destination for modern shopping. Quality products, fast delivery, exceptional service.</p>
         </div>
@@ -21,9 +25,26 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold mb-4 text-gray-200">Account</h3>
           <ul className="space-y-2 text-sm text-gray-400">
-            <li><Link href="/login" className="hover:text-white transition-colors">Login</Link></li>
-            <li><Link href="/register" className="hover:text-white transition-colors">Register</Link></li>
-            <li><Link href="/account/orders" className="hover:text-white transition-colors">My Orders</Link></li>
+            {!session ? (
+              <>
+                <li>
+                  <Link href="/login" className="hover:text-white transition-colors">
+                    Login
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/register" className="hover:text-white transition-colors">
+                    Register
+                  </Link>
+                </li>
+              </>
+            ) : (
+              <li>
+                <Link href="/account/orders" className="hover:text-white transition-colors">
+                  My Orders
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
         <div>
@@ -36,7 +57,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="max-w-7xl mx-auto mt-12 pt-6 border-t border-white/10 text-center text-sm text-gray-500">
-        © 2024 ShopVerse. All rights reserved. Built with Next.js, Prisma & PostgreSQL.
+        © 2024 Shopping. All rights reserved. Built with Next.js, Prisma & PostgreSQL.
       </div>
     </footer>
   );

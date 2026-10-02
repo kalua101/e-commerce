@@ -6,7 +6,7 @@ import { SessionProvider } from "next-auth/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ShopVerse - Modern E-Commerce",
+  title: "Shopping - Modern E-Commerce",
   description: "Discover amazing products at unbeatable prices. Shop electronics, clothing, sports gear, and more.",
 };
 
