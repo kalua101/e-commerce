@@ -1,11 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, ArrowRight, Loader2, User, ShoppingBag } from "lucide-react";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,14 +48,12 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-purple-950 to-indigo-950 flex items-center justify-center p-4">
-      {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-purple-500/10 to-indigo-500/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tr from-pink-500/10 to-blue-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        {/* Logo */}
         <Link href="/" className="flex items-center justify-center gap-3 mb-8">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
             <ShoppingBag className="text-white" size={24} />
@@ -63,7 +61,6 @@ export default function RegisterPage() {
           <span className="text-3xl font-bold gradient-text">Shopping</span>
         </Link>
 
-        {/* Register Form */}
         <div className="glass p-8 rounded-2xl border border-white/20 shadow-2xl animate-fade-in">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
@@ -159,5 +156,13 @@ export default function RegisterPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading...</div>}>
+      <RegisterForm />
+    </Suspense>
   );
 }
