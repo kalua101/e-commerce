@@ -9,8 +9,10 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     
-    const userId = session.user.id; // Store to avoid 'possibly undefined' errors
-    const isAdmin = (session.user as any).role === "ADMIN";
+    // @ts-ignore - session.user is checked above
+    const user = session.user;
+    const userId = user.id;
+    const isAdmin = (user as any).role === "ADMIN";
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -46,7 +48,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     
-    const userId = session.user.id; // Store to avoid 'possibly undefined' errors
+    // @ts-ignore - session.user.id is checked above
+    const userId = session.user.id;
     const { items, address, paymentMethod } = await req.json();
     
     if (!items || items.length === 0) {

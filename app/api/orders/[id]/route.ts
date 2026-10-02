@@ -9,7 +9,8 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     
-    const userId = session.user.id; // Store it to avoid 'possibly undefined' errors
+    // @ts-ignore - session.user is checked above
+    const userId = session.user.id;
     const { id } = await params;
     const order = await prisma.order.findUnique({ 
       where: { id }, 
@@ -40,6 +41,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     
+    // @ts-ignore - session.user is checked above
     if ((session.user as any).role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
