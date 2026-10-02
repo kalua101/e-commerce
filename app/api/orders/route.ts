@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 export async function GET(req: Request) {
   try {
     const session = await auth();
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session || !session.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const isAdmin = (session.user as any).role === "ADMIN";
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -22,7 +22,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session || !session.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { items, address, paymentMethod } = await req.json();
     if (!items || items.length === 0) return NextResponse.json({ error: "No items" }, { status: 400 });
     let addressId: string | undefined;
