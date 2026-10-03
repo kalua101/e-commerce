@@ -5,16 +5,35 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    // This will create tables if they don't exist
-    await prisma.$executeRaw`SELECT 1`;
+    // Test database connection
+    await prisma.$connect();
+    
+    // Try a simple query
+    const result = await prisma.$queryRaw`SELECT 1 as test`;
+    
+    // Check if tables exist
+    const tables = await prisma.$queryRaw`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public'
+    `;
+    
+    await prisma.$disconnect();
     
     return NextResponse.json({ 
-      message: "Database connection successful! Now run: npx prisma db push" 
+      success: true,
+      message: "Database connection successful!",
+      test: result,
+      tables: tables,
+      databaseUrl: process.env.DATABASE_URL ? "✅ Set" : "❌ Not set"
     });
   } catch (error: any) {
     return NextResponse.json({ 
+      success: false,
       error: error.message,
-      message: "Database not initialized. Please run migrations." 
+      code: error.code,
+      message: "Database connection failed",
+      databaseUrl: process.env.DATABASE_URL ? "✅ Set" : "❌ Not set"
     }, { status: 500 });
   }
 }
