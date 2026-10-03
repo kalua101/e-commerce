@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/shop/ProductCard";
 import { ArrowRight, Truck, ShieldCheck, RefreshCw } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const featuredProducts = await prisma.product.findMany({
     where: { featured: true, isActive: true },
