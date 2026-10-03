@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/shop/ProductCard";
 import { Filter } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function ProductsPage({

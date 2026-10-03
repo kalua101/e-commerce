@@ -5,6 +5,8 @@ import { formatDistance } from 'date-fns';
 import Link from 'next/link';
 import { Package, Clock, CheckCircle, XCircle } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function MyOrdersPage() {
   const session = await auth();
 
