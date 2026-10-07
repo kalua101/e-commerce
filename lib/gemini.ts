@@ -12,7 +12,7 @@ export const ai = new GoogleGenAI({
 export async function generateProductDescription(productName: string, category: string) {
   try {
     const interaction = await ai.interactions.create({
-      model: "gemini-2.0-flash",
+      model: "gemini-1.5-flash",
       input: `Write a compelling product description for an e-commerce site for: ${productName} in the ${category} category. Keep it under 100 words, professional, and persuasive.`,
     });
     return interaction.output_text;
@@ -26,7 +26,7 @@ export async function generateProductDescription(productName: string, category: 
 export async function getProductRecommendations(userQuery: string) {
   try {
     const interaction = await ai.interactions.create({
-      model: "gemini-2.0-flash",
+      model: "gemini-1.5-flash",
       input: `Based on this customer query: "${userQuery}", suggest 3 specific product categories or types they might be interested in. Return only a JSON array of strings, nothing else.`,
     });
     return JSON.parse(interaction.output_text);
@@ -44,7 +44,7 @@ export async function getAIResponse(userMessage: string, context?: string) {
       : `You are a helpful e-commerce customer support assistant for "Shopping" store.\n\nCustomer: ${userMessage}\n\nAssistant:`;
     
     const interaction = await ai.interactions.create({
-      model: "gemini-2.0-flash",
+      model: "gemini-1.5-flash",
       input: prompt,
     });
     return interaction.output_text;
@@ -58,7 +58,7 @@ export async function getAIResponse(userMessage: string, context?: string) {
 export async function analyzeReviewSentiment(review: string) {
   try {
     const interaction = await ai.interactions.create({
-      model: "gemini-2.0-flash",
+      model: "gemini-1.5-flash",
       input: `Analyze the sentiment of this product review and return only one word: "positive", "negative", or "neutral". Review: "${review}"`,
     });
     return interaction.output_text.toLowerCase().trim();
