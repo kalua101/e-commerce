@@ -13,9 +13,11 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [search, setSearch] = useState("");
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    setMounted(true);
     const handler = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handler);
     return () => window.removeEventListener("scroll", handler);
@@ -54,7 +56,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <button onClick={toggleCart} className="relative p-2 rounded-full hover:bg-white/10 transition-colors" id="cart-toggle-btn">
             <ShoppingCart size={20} />
-            {getTotalItems() > 0 && (
+            {mounted && getTotalItems() > 0 && (
               <span className="absolute -top-1 -right-1 w-5 h-5 bg-indigo-500 rounded-full text-xs flex items-center justify-center font-bold animate-pulse-glow">{getTotalItems()}</span>
             )}
           </button>
