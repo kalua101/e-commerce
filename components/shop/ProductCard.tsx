@@ -1,10 +1,10 @@
 "use client";
-import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart, Star, Eye } from "lucide-react";
 import { useCartStore } from "@/lib/store/cart";
 import { formatCurrency, getDiscountPercent } from "@/lib/utils";
 import { useState } from "react";
+import ProductModal from "./ProductModal";
 
 interface ProductCardProps {
   id: string;
@@ -22,20 +22,26 @@ interface ProductCardProps {
 export default function ProductCard({ id, name, slug, price, comparePrice, images, avgRating = 0, reviewCount = 0, inventory, category }: ProductCardProps) {
   const { addItem } = useCartStore();
   const [adding, setAdding] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const discount = comparePrice ? getDiscountPercent(price, Number(comparePrice)) : 0;
   const inStock = !inventory || inventory.quantity > 0;
   const lowStock = inventory && inventory.quantity > 0 && inventory.quantity <= 10;
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
+    e.stopPropagation();
     if (!inStock) return;
     setAdding(true);
     addItem({ id, name, price, image: images[0] || "", slug });
     setTimeout(() => setAdding(false), 1000);
   };
 
+  const handleCardClick = () => {
+    setModalOpen(true);
+  };
+
   return (
-    <Link href={`/products/${slug}`} className="group relative glass rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 flex flex-col">
+    <>
+      <div onClick={handleCardClick} className="group relative glass rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 flex flex-col cursor-pointer">
       <div className="relative aspect-square overflow-hidden bg-gray-900">
         {images[0] ? (
           <Image src={images[0]} alt={name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />
@@ -74,6 +80,10 @@ export default function ProductCard({ id, name, slug, price, comparePrice, image
           <ShoppingCart size={16}/>{adding ? "Added!" : inStock ? "Add to Cart" : "Out of Stock"}
         </button>
       </div>
-    </Link>
+      </div>
+
+      {/* Product Modal */}
+      <ProductModal slug={slug} isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+    </>
   );
 }
