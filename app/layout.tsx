@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import AIChat from "@/components/shop/AIChat";
+import SmoothScroll from "@/components/SmoothScroll";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +17,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="dark">
       <body className={`${inter.className} bg-gray-950 text-white antialiased`}>
         <SessionProvider>
-          {children}
+          <SmoothScroll>
+            {children}
+          </SmoothScroll>
           <AIChat />
         </SessionProvider>
       </body>
