@@ -58,10 +58,10 @@ export async function POST(req: NextRequest) {
               items: order.items.map(item => ({
                 name: item.product.name,
                 quantity: item.quantity,
-                price: item.price,
+                price: Number(item.price),
               })),
-              total: order.total,
-              shippingAddress: order.shippingAddress || 'N/A',
+              total: Number(order.total),
+              shippingAddress: 'N/A',
             });
           } catch (emailError) {
             console.error('Failed to send order confirmation email:', emailError);
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
               orderNumber: order.id,
               customerName: order.user.name || 'Customer',
               customerEmail: order.user.email,
-              total: order.total,
+              total: Number(order.total),
               itemCount: order.items.length,
             });
           } catch (emailError) {

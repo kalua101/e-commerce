@@ -42,7 +42,7 @@ export default auth(async (req) => {
   
   // Rate limiting for API routes
   if (nextUrl.pathname.startsWith('/api/')) {
-    const ip = req.ip || req.headers.get('x-forwarded-for') || 'anonymous';
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'anonymous';
     const identifier = `ip:${ip}`;
     
     let ratelimit: Ratelimit | null = null;

@@ -18,7 +18,7 @@ export async function generateProductDescription(productName: string, category: 
       temperature: 0.7,
     });
     
-    return response.choices[0].message.content;
+    return response.choices[0]?.message?.content || 'Could not generate description';
   } catch (error) {
     console.error("Hugging Face API Error:", error);
     throw error;
@@ -38,7 +38,8 @@ export async function getProductRecommendations(userQuery: string) {
     });
     
     try {
-      return JSON.parse(response.choices[0].message.content);
+      const content = response.choices[0]?.message?.content;
+      return content ? JSON.parse(content) : ["Electronics", "Clothing", "Home & Garden"];
     } catch {
       return ["Electronics", "Clothing", "Home & Garden"];
     }
@@ -66,7 +67,7 @@ export async function getAIResponse(userMessage: string, context?: string) {
       temperature: 0.7,
     });
     
-    return response.choices[0].message.content;
+    return response.choices[0]?.message?.content || 'Sorry, I could not generate a response.';
   } catch (error) {
     console.error("Hugging Face API Error:", error);
     throw error;
@@ -85,7 +86,7 @@ export async function analyzeReviewSentiment(review: string) {
       temperature: 0.3,
     });
     
-    return response.choices[0].message.content.toLowerCase().trim();
+    return response.choices[0]?.message?.content?.toLowerCase().trim() || 'neutral';
   } catch (error) {
     console.error("Hugging Face API Error:", error);
     throw error;

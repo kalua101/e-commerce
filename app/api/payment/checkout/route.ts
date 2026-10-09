@@ -32,11 +32,14 @@ export async function POST(req: NextRequest) {
     }));
 
     // Create order in database
+    const subtotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
     const order = await prisma.order.create({
       data: {
-        userId: session.user.id,
+        userId: session.user?.id || '',
         status: "PENDING",
-        total: items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0),
+        total: subtotal,
+        subtotal: subtotal,
+        shippingCost: 0,
         items: {
           create: items.map((item: any) => ({
             productId: item.productId,

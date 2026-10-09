@@ -5,7 +5,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2024-12-18.acacia",
+  apiVersion: "2024-12-18.acacia" as any,
   typescript: true,
 });
 
@@ -29,12 +29,11 @@ export async function createCheckoutSession(
 ) {
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    payment_method_types: ["card"],
     line_items: lineItems,
     success_url: successUrl,
     cancel_url: cancelUrl,
     metadata,
-  });
+  } as any);
 
   return session;
 }

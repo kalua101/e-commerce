@@ -19,8 +19,7 @@ export async function GET() {
           email: "admin@store.com",
           name: "Admin User",
           password: hashedPassword,
-          role: "admin",
-          emailVerified: new Date()
+          role: "admin"
         }
       });
       
@@ -41,8 +40,7 @@ export async function GET() {
           description: "High-performance laptop for professionals",
           price: 1299.99,
           comparePrice: 1499.99,
-          image: "/placeholder.svg",
-          images: ["/placeholder.svg"],
+          images: JSON.stringify(["/placeholder.svg"]),
           categoryId: electronics.id,
           featured: true,
           isActive: true
@@ -52,7 +50,7 @@ export async function GET() {
       await prisma.inventory.create({
         data: {
           productId: product1.id,
-          stock: 50,
+          quantity: 50,
           lowStockThreshold: 10
         }
       });
