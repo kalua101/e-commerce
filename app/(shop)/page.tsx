@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/shop/ProductCard";
@@ -12,10 +11,6 @@ export default async function HomePage() {
     where: { featured: true, isActive: true },
     include: { inventory: true, category: true, reviews: { select: { rating: true } } },
     take: 4,
-  });
-  
-  const categories = await prisma.category.findMany({ 
-    orderBy: { name: 'asc' }
   });
 
   return (
@@ -92,27 +87,6 @@ export default async function HomePage() {
               </FadeIn>
             );
           })}
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="max-w-7xl mx-auto px-4 w-full">
-        <FadeIn>
-          <h2 className="text-3xl font-bold text-white mb-8">Shop by Category</h2>
-        </FadeIn>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((cat, index) => (
-            <FadeIn key={cat.id} delay={index * 0.15} direction="up">
-              <Link href={`/products?category=${cat.slug}`} className="group relative h-64 rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-gray-900">
-                  {cat.image && <Image src={cat.image} alt={cat.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-60 group-hover:opacity-80" unoptimized/>}
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <h3 className="text-3xl font-bold text-white drop-shadow-lg">{cat.name}</h3>
-                </div>
-              </Link>
-            </FadeIn>
-          ))}
         </div>
       </section>
     </div>
