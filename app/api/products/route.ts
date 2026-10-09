@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { getCached, CACHE_KEYS, CACHE_TTL, invalidateCache } from "@/lib/redis";
+import { syncProductToAlgolia } from "@/lib/algolia";
 
 export const dynamic = 'force-dynamic';
 
@@ -16,17 +18,40 @@ export async function GET(req: Request) {
     const sortOrder = (searchParams.get("sortOrder") || "desc") as "asc" | "desc";
     const minPrice = searchParams.get("minPrice");
     const maxPrice = searchParams.get("maxPrice");
-    const where: any = { isActive: true };
-    if (category) where.category = { slug: category };
-    if (featured === "true") where.featured = true;
-    if (search) where.OR = [{ name: { contains: search, mode: "insensitive" } }, { description: { contains: search, mode: "insensitive" } }];
-    if (minPrice || maxPrice) { where.price = {}; if (minPrice) where.price.gte = parseFloat(minPrice); if (maxPrice) where.price.lte = parseFloat(maxPrice); }
-    const [products, total] = await Promise.all([
-      prisma.product.findMany({ where, include: { category: true, inventory: true, reviews: { select: { rating: true } } }, orderBy: { [sortBy]: sortOrder }, skip: (page - 1) * limit, take: limit }),
-      prisma.product.count({ where }),
-    ]);
-    const productsWithRating = products.map((p) => ({ ...p, avgRating: p.reviews.length > 0 ? p.reviews.reduce((sum, r) => sum + r.rating, 0) / p.reviews.length : 0, reviewCount: p.reviews.length }));
-    return NextResponse.json({ products: productsWithRating, total, pages: Math.ceil(total / limit), page });
+
+    // Create cache key based on query params
+    const cacheKey = search 
+      ? CACHE_KEYS.PRODUCT_SEARCH(search)
+      : category 
+      ? CACHE_KEYS.CATEGORY_PRODUCTS(category)
+      : `${CACHE_KEYS.PRODUCTS}:${page}:${limit}:${sortBy}:${sortOrder}`;
+
+    // Use cache for simple queries (no complex filters)
+    const useCache = !minPrice && !maxPrice;
+
+    const fetchProducts = async () => {
+      const where: any = { isActive: true };
+      if (category) where.category = { slug: category };
+      if (featured === "true") where.featured = true;
+      if (search) where.OR = [{ name: { contains: search, mode: "insensitive" } }, { description: { contains: search, mode: "insensitive" } }];
+      if (minPrice || maxPrice) { where.price = {}; if (minPrice) where.price.gte = parseFloat(minPrice); if (maxPrice) where.price.lte = parseFloat(maxPrice); }
+      
+      const [products, total] = await Promise.all([
+        prisma.product.findMany({ where, include: { category: true, inventory: true, reviews: { select: { rating: true } } }, orderBy: { [sortBy]: sortOrder }, skip: (page - 1) * limit, take: limit }),
+        prisma.product.count({ where }),
+      ]);
+      
+      const productsWithRating = products.map((p) => ({ ...p, avgRating: p.reviews.length > 0 ? p.reviews.reduce((sum, r) => sum + r.rating, 0) / p.reviews.length : 0, reviewCount: p.reviews.length }));
+      
+      return { products: productsWithRating, total, pages: Math.ceil(total / limit), page };
+    };
+
+    // Use cache or fetch fresh
+    const result = useCache 
+      ? await getCached(cacheKey, fetchProducts, CACHE_TTL.PRODUCTS)
+      : await fetchProducts();
+
+    return NextResponse.json(result);
   } catch { return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 }); }
 }
 
@@ -39,6 +64,13 @@ export async function POST(req: Request) {
       data: { name, slug, description, price: parseFloat(price), comparePrice: comparePrice ? parseFloat(comparePrice) : null, images: images || [], categoryId, featured: featured || false, inventory: { create: { quantity: initialStock || 0, lowStockThreshold: lowStockThreshold || 10 } } },
       include: { category: true, inventory: true },
     });
+
+    // Invalidate product caches
+    await invalidateCache([CACHE_KEYS.PRODUCTS, CACHE_KEYS.CATEGORIES]);
+
+    // Sync to Algolia (async, don't wait)
+    syncProductToAlgolia(product).catch(err => console.error('Algolia sync error:', err));
+
     return NextResponse.json(product, { status: 201 });
   } catch { return NextResponse.json({ error: "Failed to create product" }, { status: 500 }); }
 }
