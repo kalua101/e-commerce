@@ -7,11 +7,43 @@ export const dynamic = 'force-dynamic';
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const product = await prisma.product.findUnique({ where: { slug: id }, include: { category: true, inventory: true, reviews: { include: { user: { select: { name: true, image: true } } }, orderBy: { createdAt: "desc" } } } });
+    const product = await prisma.product.findUnique({ 
+      where: { slug: id }, 
+      include: { 
+        category: true, 
+        inventory: true, 
+        reviews: { 
+          include: { 
+            user: { 
+              select: { name: true, image: true } 
+            } 
+          }, 
+          orderBy: { createdAt: "desc" } 
+        } 
+      } 
+    });
+    
     if (!product) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    const avgRating = product.reviews.length > 0 ? product.reviews.reduce((sum, r) => sum + r.rating, 0) / product.reviews.length : 0;
-    return NextResponse.json({ ...product, avgRating, reviewCount: product.reviews.length });
-  } catch { return NextResponse.json({ error: "Failed to fetch product" }, { status: 500 }); }
+    
+    const avgRating = product.reviews.length > 0 
+      ? product.reviews.reduce((sum, r) => sum + r.rating, 0) / product.reviews.length 
+      : 0;
+    
+    // Parse images JSON string to array
+    const images = typeof product.images === 'string' 
+      ? JSON.parse(product.images) 
+      : product.images;
+    
+    return NextResponse.json({ 
+      ...product, 
+      images,
+      avgRating, 
+      reviewCount: product.reviews.length 
+    });
+  } catch (error) { 
+    console.error("Error fetching product:", error);
+    return NextResponse.json({ error: "Failed to fetch product" }, { status: 500 }); 
+  }
 }
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {

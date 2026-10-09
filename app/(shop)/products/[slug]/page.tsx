@@ -13,10 +13,17 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
   const { addItem, openCart } = useCartStore();
 
   useEffect(() => {
-    fetch(`/api/products/${params.slug}`).then(res => res.json()).then(data => {
-      setProduct(data);
-      setLoading(false);
-    });
+    fetch(`/api/products/${params.slug}`)
+      .then(res => res.json())
+      .then(data => {
+        setProduct(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching product:', error);
+        setProduct({ error: 'Failed to load product' });
+        setLoading(false);
+      });
   }, [params.slug]);
 
   if (loading) return <div className="h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-indigo-500" size={40} /></div>;
