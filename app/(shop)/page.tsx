@@ -14,7 +14,9 @@ export default async function HomePage() {
     take: 4,
   });
   
-  const categories = await prisma.category.findMany({ take: 3 });
+  const categories = await prisma.category.findMany({ 
+    orderBy: { name: 'asc' }
+  });
 
   return (
     <div className="flex flex-col gap-16 pb-16">
@@ -98,7 +100,7 @@ export default async function HomePage() {
         <FadeIn>
           <h2 className="text-3xl font-bold text-white mb-8">Shop by Category</h2>
         </FadeIn>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {categories.map((cat, index) => (
             <FadeIn key={cat.id} delay={index * 0.15} direction="up">
               <Link href={`/products?category=${cat.slug}`} className="group relative h-64 rounded-2xl overflow-hidden">
