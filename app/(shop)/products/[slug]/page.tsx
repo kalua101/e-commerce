@@ -5,15 +5,17 @@ import { useState, useEffect } from "react";
 import { ShoppingCart, Star, Check, AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 import { useCartStore } from "@/lib/store/cart";
 import { formatCurrency, getDiscountPercent } from "@/lib/utils";
+import { use } from "react";
 
-export default function ProductDetailPage({ params }: { params: { slug: string } }) {
+export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const { addItem, openCart } = useCartStore();
 
   useEffect(() => {
-    fetch(`/api/products/${params.slug}`)
+    fetch(`/api/products/${slug}`)
       .then(res => res.json())
       .then(data => {
         setProduct(data);
@@ -24,7 +26,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
         setProduct({ error: 'Failed to load product' });
         setLoading(false);
       });
-  }, [params.slug]);
+  }, [slug]);
 
   if (loading) return <div className="h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-indigo-500" size={40} /></div>;
   if (product.error) return <div className="h-[60vh] flex items-center justify-center flex-col gap-4">
