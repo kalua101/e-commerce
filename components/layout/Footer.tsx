@@ -50,9 +50,11 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold mb-4 text-gray-200">Info</h3>
           <ul className="space-y-2 text-sm text-gray-400">
+            <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+            <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
+            <li><Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link></li>
             <li><span className="hover:text-white transition-colors cursor-pointer">Free shipping over $50</span></li>
             <li><span className="hover:text-white transition-colors cursor-pointer">30-day returns</span></li>
-            <li><span className="hover:text-white transition-colors cursor-pointer">Secure checkout</span></li>
           </ul>
         </div>
       </div>
