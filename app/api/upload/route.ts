@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { uploadToS3 } from "@/lib/s3";
+import { uploadToS3, isS3Configured } from "@/lib/s3";
 import { auth } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
@@ -10,6 +10,14 @@ export async function POST(req: NextRequest) {
     const session = await auth();
     if (!session || (session.user as any)?.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Check if S3 is configured
+    if (!isS3Configured()) {
+      return NextResponse.json(
+        { error: "File upload is not configured. AWS S3 credentials are required." },
+        { status: 503 }
+      );
     }
 
     const formData = await req.formData();
